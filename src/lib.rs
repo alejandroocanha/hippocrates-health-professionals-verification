@@ -1,6 +1,6 @@
 use anchor_lang::prelude::*;
 
-// ID del Solana Program. El "build" del Playground lo llena automáticamente.
+// ID del Solana Program.
 declare_id!("");
 
 // =====================================================================
@@ -14,9 +14,8 @@ pub mod hippocrates {
     // ───────────────────────────────────────────────────────────────────
     // (Create #1) Inicializar Registro Global
     // ───────────────────────────────────────────────────────────────────
-    /// Crea la PDA de configuración global del programa.
-    /// Quien la llama queda como `admin` y como primer operador.
-    /// Se llama UNA sola vez por deploy.
+    /// Crea la PDA de configuración global del programa
+    /// Quien la llama queda como `admin` y como primer operado
     pub fn inicializar_registro(context: Context<InicializarRegistro>) -> Result<()> {
         let admin_id = context.accounts.admin.key();
         msg!("Inicializando registro global. Admin: {}", admin_id);
@@ -37,7 +36,7 @@ pub mod hippocrates {
     // ───────────────────────────────────────────────────────────────────
     // (Update) Agregar Operador
     // ───────────────────────────────────────────────────────────────────
-    /// Solo el admin puede dar de alta nuevos operadores autorizados a sellar.
+    /// Solo el admin puede dar de alta nuevos operadores autorizados a sellar
     pub fn agregar_operador(
         context: Context<ModificarRegistro>,
         nuevo_operador: Pubkey,
@@ -78,7 +77,7 @@ pub mod hippocrates {
     // (Create #2) Sellar Cédula — instrucción principal
     // ───────────────────────────────────────────────────────────────────
     /// Crea (o falla si ya existe) la PDA SelloCedula con el hash del payload
-    /// normalizado de la SEP. Solo operadores autorizados.
+    /// normalizado de la SEP. Solo operadores autorizados
     pub fn sellar_cedula(
         context: Context<SellarCedula>,
         id_cedula: String,
@@ -125,7 +124,7 @@ pub mod hippocrates {
     // ───────────────────────────────────────────────────────────────────
     // (Update) Re-verificar Cédula
     // ───────────────────────────────────────────────────────────────────
-    /// Refresca el hash y actualiza el timestamp/slot. No crea cuenta nueva.
+    /// Refresca el hash y actualiza el timestamp/slot. No crea cuenta nueva
     pub fn re_verificar_cedula(
         context: Context<ModificarSello>,
         nuevo_hash_payload: [u8; 32],
@@ -169,7 +168,7 @@ pub mod hippocrates {
     // (Delete — soft) Revocar Cédula
     // ───────────────────────────────────────────────────────────────────
     /// Marca la cédula como Revocada. No cierra la cuenta para preservar
-    /// el historial verificable on-chain.
+    /// el historial verificable on-chain
     pub fn revocar_cedula(context: Context<ModificarSello>) -> Result<()> {
         let registro = &context.accounts.registro;
         let operador = context.accounts.operador.key();
@@ -193,7 +192,7 @@ pub mod hippocrates {
     // (Read) Consultar Cédula
     // ───────────────────────────────────────────────────────────────────
     /// Imprime en log el estado actual del sello. Para lectura programática
-    /// los clientes deben usar `program.account.selloCedula.fetch(pda)`.
+    /// los clientes deben usar `program.account.selloCedula.fetch(pda)`
     pub fn consultar_cedula(context: Context<ConsultarSello>) -> Result<()> {
         let sello = &context.accounts.sello;
         msg!(
@@ -294,7 +293,7 @@ pub struct ModificarRegistro<'info> {
 }
 
 #[derive(Accounts)]
-#[instruction(id_cedula: String)] // necesario para usar id_cedula como seed
+#[instruction(id_cedula: String)] // necesario para usar id_cedula como seeed
 pub struct SellarCedula<'info> {
     #[account(mut)]
     pub operador: Signer<'info>,

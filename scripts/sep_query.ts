@@ -59,10 +59,10 @@ async function consultar(idCedula: string): Promise<CedulaPayload | null> {
 function clasificar(carrera: string): string {
   const c = carrera.toUpperCase();
   if (c.includes("MEDICINA") || c.includes("MEDIC")) return "Medicina";
-  if (c.includes("ODONT") || c.includes("DENT"))     return "Odontologia";
-  if (c.includes("PSIC"))                            return "Psicologia";
-  if (c.includes("NUTRI"))                           return "Nutricion";
-  if (c.includes("ENFERM"))                          return "Enfermeria";
+  if (c.includes("ODONT") || c.includes("DENT")) return "Odontologia";
+  if (c.includes("PSIC")) return "Psicologia";
+  if (c.includes("NUTRI")) return "Nutricion";
+  if (c.includes("ENFERM")) return "Enfermeria";
   return "Otro";
 }
 
@@ -86,7 +86,7 @@ function sha256(s: string): Buffer {
   // Hash canónico (claves ordenadas) → resultado reproducible
   const canon = JSON.stringify(payload, Object.keys(payload).sort());
   const hashPayload = sha256(canon);
-  const hashNombre  = sha256(`${payload.nombre}|${payload.paterno}|${payload.materno}`);
+  const hashNombre = sha256(`${payload.nombre}|${payload.paterno}|${payload.materno}`);
 
   console.log("\nPayload (off-chain, no se almacena en cadena):");
   console.log(payload);
@@ -97,3 +97,5 @@ function sha256(s: string): Buffer {
   console.log("nombre_completo_hash : [", Array.from(hashNombre).join(", "), "]");
   console.log("tipo_profesion       :", clasificar(payload.nombre_carrera));
 })();
+
+// Es probable que presente algunos bugs al probarse en producción, dado que la página de la SEP tarda algunos segundos o minutos en regresar a la respuesta. 

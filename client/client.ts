@@ -60,7 +60,7 @@ const txSellar = await pg.program.methods
   .rpc();
 console.log("\n[OK] sellar_cedula tx:", txSellar);
 
-// 3) Re-verificar
+// 3) Re verificar
 const txReverif = await pg.program.methods
   .reVerificarCedula(FAKE_HASH_REVERIFICAR)
   .accounts({
