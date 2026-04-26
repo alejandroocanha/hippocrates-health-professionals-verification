@@ -1,5 +1,7 @@
 # Hippocrates Health Professionals Verification
 
+![Banner](./imgs/banner.png)
+
 **Verificador de cédulas profesionales del sector salud en México.**
 
 Este proyecto sellla en Solana la verificación de cédulas de médicos, nutriólogos, psicólogos, dentistas y otros profesionistas del salud. El objetivo es que cualquier persona pueda confirmar criptográficamente que una cédula estaba vigente en un momento dado, sin depender de un servidor central.
