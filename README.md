@@ -6,7 +6,7 @@ Este proyecto sella en Solana la verificación de cédulas de médicos, nutriól
 
 ---
 
-## Por qué existe este proyecto
+## ¿Por qué existe este proyecto?
 
 En México ejercer como profesionista de la salud sin cédula válida es un problema real. COFEPRIS y PROFECO han documentado casos de suplantación profesional, sobre todo en áreas como estética, nutrición y psicología.
 Como en Doctoralia o en plataformas donde médicos certificados y personas que se hacen pasar por profesionales de la salud logran saltar los procesos de verificación manuales y ofrecen sus servicios, sin supervisión o algo que especifique que son profesionales de la salud reales. Pocos pacientes se toman el tiempo de verificar que los profesionales de la salud realmente tienen un registro ante la SEP y son seguros. Y cuando verifican en el sistema de la SEP, el sistema está caído o no saben cómo.
