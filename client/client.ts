@@ -9,11 +9,12 @@ import { PublicKey, SystemProgram } from "@solana/web3.js";
 const ID_CEDULA = "9876543";
 
 // Hash demo (en producción viene de scripts/sep_query.ts)
-const FAKE_HASH_PAYLOAD     = Array(32).fill(0).map((_, i) => (i * 7) % 256);
-const FAKE_HASH_NOMBRE      = Array(32).fill(0).map((_, i) => (i * 11) % 256);
+const FAKE_HASH_PAYLOAD = Array(32).fill(0).map((_, i) => (i * 7) % 256);
+const FAKE_HASH_NOMBRE = Array(32).fill(0).map((_, i) => (i * 11) % 256);
 const FAKE_HASH_REVERIFICAR = Array(32).fill(0).map((_, i) => (i * 13) % 256);
 
 // PDAs
+// Es probable que necesite llamar a const PROGRAM_ID = new PublicKey("Aquí mi ID"); para correr el programa. 
 const [registroPda] = PublicKey.findProgramAddressSync(
   [Buffer.from("registro_global")],
   pg.PROGRAM_ID
