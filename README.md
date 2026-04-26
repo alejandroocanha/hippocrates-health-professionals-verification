@@ -1,14 +1,15 @@
-# Hippocrates
+# Hippocrates Health Professionals Verification
 
-**Verificador on-chain de cédulas profesionales del sector salud en México.**
+**Verificador de cédulas profesionales del sector salud en México.**
 
-Este proyecto sellla en Solana la verificación de cédulas de médicos, nutriólogos, psicólogos, dentistas y otros profesionistas del salud. El objetivo es que cualquier persona pueda confirmar criptográficamente que una cédula estaba vigente en un momento dado, sin depender de un servidor central.
+Este proyecto sella en Solana la verificación de cédulas de médicos, nutriólogos, psicólogos, dentistas y otros profesionistas del salud. El objetivo es que cualquier persona pueda confirmar criptográficamente que una cédula estaba vigente en un momento dado, sin depender de un servidor central.
 
 ---
 
 ## Por qué existe este proyecto
 
-En México, ejercer como profesionista de la salud sin cédula válida es un problema real. COFEPRIS y PROFECO han documentado casos de suplantación profesional, sobre todo en áreas como estética, nutrición y psicología.
+En México ejercer como profesionista de la salud sin cédula válida es un problema real. COFEPRIS y PROFECO han documentado casos de suplantación profesional, sobre todo en áreas como estética, nutrición y psicología.
+Como en Doctoralia o en plataformas donde médicos certificados y personas que se hacen pasar por profesionales de la salud logran saltar los procesos de verificación manuales y ofrecen sus servicios, sin supervisión o algo que especifique que son profesionales de la salud reales. Pocos pacientes se toman el tiempo de verificar que los profesionales de la salud realmente tienen un registro ante la SEP y son seguros. Y cuando verifican en el sistema de la SEP, el sistema está caído o no saben cómo.
 
 Hoy la consulta al RENAPRO es manual y no tiene API oficial. Hippocrates propone usar la blockchain de Solana como testigo inmutable: un operador autorizado verifica contra el registro oficial, calcula un hash, y lo sella on-chain junto con el timestamp y su firma digital.
 
@@ -56,7 +57,7 @@ Esto es un MVP funcional para el bootcamp. Puse a andar el programa y funciona:
 inicializar_registro → sellar_cedula → re_verificar_cedula → consultar → revocar
 ```
 
-Pero no tiene interfaz gráfica, no está en mainnet, y el script de SEP usa un endpoint público sin SLA.
+No tiene interfaz gráfica, funciona en  Devnet, y el script de SEP usa un endpoint público sin SLA.
 
 ---
 
@@ -73,7 +74,6 @@ Si esto siguiera adelante, las cosas que haría:
 4. **cNFT por profesionista** — Una vez sellada la cédula, mintear un token comprimido en la wallet del profesionista como insignia verificable.
 
 5. **Dashboard público** — Indexar con Helius o Para mostrar estadísticas por especialidad, por estado, por institución.
-
 ---
 
 ## Referencias
@@ -86,4 +86,4 @@ Si esto siguiera adelante, las cosas que haría:
 
 ---
 
-*Proyecto desarrollado como entregable final del bootcamp Solana Developer Certification — WayLearn LATAM, Abril 2026.*
+*Proyecto desarrollado como entregable final del bootcamp Solana Developer Certification — WayLearn LATAM, Abril 2026.Alejandro Ocaña [LinkedIn](https://www.linkedin.com/in/aleocanha/)*
