@@ -1,130 +1,101 @@
-# Hippocrates · Verificador On-Chain de Cédulas Profesionales del Sector Salud v1
+# Hippocrates
 
-> Proyecto final del bootcamp **[Solana Developer Certification — WayLearn LATAM](https://waylearn.gitbook.io/solana-developer-certification)**.
-> Programa Anchor + Rust + Solana Playground · Devnet · CRUD + PDA.
+**Verificador on-chain de cédulas profesionales del sector salud en México.**
 
-`Hippocrates` es un programa de Solana que **sella on-chain** la verificación de cédulas profesionales del sector salud en México (medicina, odontología, psicología, nutrición, enfermería, etc.). Permite que un operador autorizado consulte el [Registro Nacional de Profesionistas (RENAPRO)](https://www.cedulaprofesional.sep.gob.mx/) y deje en cadena un **hash criptográfico** del estado verificado, junto con el slot, el timestamp y la firma del operador. Cualquier paciente, farmacia, hospital o aseguradora puede después leer el estado on-chain y confirmar que la cédula estaba vigente en el momento del sello.
-
----
-
-## Tabla de contenidos
-
-- [Cómo funciona (en una imagen)](#cómo-funciona-en-una-imagen)
-- [Estructura del repo](#estructura-del-repo)
-- [Instrucciones del programa](#instrucciones-del-programa)
-- [PDAs](#pdas)
-- [Cómo usarlo](#cómo-usarlo)
-- [Ejemplo de salida del cliente](#ejemplo-de-salida-del-cliente)
-- [Helper opcional `sep_query.ts`](#helper-opcional-sep_queryts)
-- [Privacidad y consideraciones legales](#privacidad-y-consideraciones-legales)
-- [Roadmap](#roadmap)
-- [Licencia](#licencia)
+Este proyecto sellla en Solana la verificación de cédulas de médicos, nutriólogos, psicólogos, dentistas y otros profesionistas del salud. El objetivo es que cualquier persona pueda confirmar criptográficamente que una cédula estaba vigente en un momento dado, sin depender de un servidor central.
 
 ---
 
-## Cómo funciona (en una imagen)
+## Por qué existe este proyecto
 
-```
-Operador autorizado
-    │ (1) consulta RENAPRO con scripts/sep_query.ts → JSON oficial
-    │ (2) calcula sha256(payload normalizado) → hash 32 bytes
-    ▼
-Solana Devnet · programa Hippocrates
-    ├── PDA RegistroGlobal (config + lista de operadores)
-    └── PDA SelloCedula(idCedula)
-            • hash_payload   (32 bytes)
-            • estatus        (Vigente / Revocada / Pendiente)
-            • tipo_profesion (Medicina | Odontologia | Psicologia | Nutricion | Enfermeria | Otro)
-            • verificada_por (Pubkey del operador)
-            • slot, timestamp del Clock sysvar
+En México, ejercer como profesionista de la salud sin cédula válida es un problema real. COFEPRIS y PROFECO han documentado casos de suplantación profesional, sobre todo en áreas como estética, nutrición y psicología.
 
-Tercero (paciente, farmacia, aseguradora)
-    └── fetch(SelloCedula PDA) → ve el estatus
-    └── recalcula sha256(payload off-chain) y compara con hash_payload on-chain
-```
+Hoy la consulta al RENAPRO es manual y no tiene API oficial. Hippocrates propone usar la blockchain de Solana como testigo inmutable: un operador autorizado verifica contra el registro oficial, calcula un hash, y lo sella on-chain junto con el timestamp y su firma digital.
 
-**No hay backend ni base de datos.** Toda la fuente de verdad vive on-chain. El servicio web del SEP solo se consulta off-chain por el operador para producir el hash de entrada.
+Esto no reemplaza al RENAPRO — lo usa como fuente de verdad off-chain y ancla el resultado en Solana.
 
 ---
 
-## Estructura del repo
+## Estructura del proyecto
 
 ```
 SOLANA-HIPPOCRATES/
 ├── src/
-│   └── lib.rs              ← programa Anchor (Rust)
+│   └── lib.rs          ← Programa Anchor (Rust). Acá viven las cuentas,
+│                        los contextos y las 5 instrucciones.
 ├── client/
-│   └── client.ts           ← cliente TS para Solana Playground
+│   └── client.ts       ← Script de pruebas para Solana Playground.
+│                        Ejecuta todo el flujo CRUD de una vez.
 ├── scripts/
-│   └── sep_query.ts        ← (opcional) consulta SEP + hash off-chain
+│   └── sep_query.ts    ← Helper que consulta el Solr público de la SEP
+│                        y produce los hashes para sellar_cedula().
 ├── tests/
-│   └── anchor.test.ts      ← (opcional) tests Mocha
-├── Anchor.toml             ← lo genera Solana Playground al hacer build
-├── Cargo.toml              ← idem
-└── README.md               ← este archivo
+│   └── anchor.test.ts  ← Tests (no obligatorios para la entrega).
+└── README.md
 ```
 
 ---
 
-## Instrucciones del programa
+## Qué hace cada carpeta
 
-| # | Instrucción | Tipo CRUD | Quién puede llamarla |
-|---|---|---|---|
-| 1 | `inicializar_registro` | Create (one-shot) | Cualquier wallet (queda como admin y primer operador) |
-| 2 | `agregar_operador(pubkey)` | Update | Solo `admin` |
-| 3 | `alternar_pausa()` | Update | Solo `admin` |
-| 4 | `sellar_cedula(id, hash_payload, hash_nombre, tipo)` | Create | Operador autorizado |
-| 5 | `re_verificar_cedula(nuevo_hash)` | Update | Operador autorizado |
-| 6 | `revocar_cedula()` | Delete (soft) | Operador autorizado |
-| 7 | `consultar_cedula()` | Read (log) | Cualquier wallet |
+**`src/`** — El smart contract en Rust. Define dos cuentas:
+- `RegistroGlobal`: configuración del programa y lista de operadores autorizados.
+- `SelloCedula`: una por cada número de cédula sellado. Contiene el hash, el estatus y metadatos de verificación.
 
-> Lectura programática real desde clientes: `program.account.selloCedula.fetch(selloPda)`.
+**`client/`** — Para probar sin frontend. Se corre directo en el Playground después de `deploy`.
 
-### Errores definidos
-
-```
-NoEresAdmin · NoEresOperador · OperadorYaExiste · LimiteOperadoresAlcanzado
-IdCedulaInvalido · ProgramaPausado · CedulaRevocada · OverflowContador
-```
+**`scripts/`** — Helper opcional. No es parte del programa on-chain; sirve para que el operador produzca el hash real desde la respuesta de la SEP antes de llamar a `sellar_cedula`.
 
 ---
 
-## PDAs
+## Estado actual
 
-### `RegistroGlobal`
+Esto es un MVP funcional para el bootcamp. Puse a andar el programa completo en Devnet y verificaste que el flujo funciona:
 
-- **Seeds:** `[b"registro_global"]`
-- **Campos:** `admin`, `operadores: Vec<Pubkey>` (max 10), `total_sellos`, `pausa_global`, `bump`.
+```
+inicializar_registro → sellar_cedula → re_verificar_cedula → consultar → revocar
+```
 
-### `SelloCedula`
-
-- **Seeds:** `[b"sello", id_cedula.as_bytes()]` (una PDA por número de cédula).
-- **Campos:** `id_cedula`, `hash_payload`, `nombre_completo_hash`, `tipo_profesion`, `estatus`, `verificada_por`, `slot_verificacion`, `unix_verificacion`, `contador_reverificaciones`, `bump`.
+Pero no tiene interfaz gráfica, no está en mainnet, y el script de SEP usa un endpoint público sin SLA.
 
 ---
 
-## Cómo usarlo
+## Próximos pasos (backlog)
 
-### Opción 1 — Solana Playground (más simple)
+Si esto siguiera adelante, las cosas que haría:
 
-1. Abrir en el navegador:
-   ```
-   https://beta.solpg.io/https://github.com/alejandroocanha/SOLANA-HIPPOCRATES
-   ```
-2. En la esquina inferior izquierda, **crear o conectar wallet** (Devnet, con airdrop automático).
-3. Terminal del Playground:
+1. **Frontend** — Una página mínima donde el usuario meta el número de cédula y vea el resultado. Probablemente con React y el wallet adapter de Phantom.
+
+2. **QR de Solana Action** — Que cualquier paciente escanee un código QR en la receta o en el consultorio y pueda verificar al instante desde su celular.
+
+3. **Multi-attestation** — Que un sello requiera la firma de 2 o 3 operadores (por ejemplo, el colegio profesional + el hospital). Estilo multisig.
+
+4. **cNFT por profesionista** — Una vez sellada la cédula, mintear un token comprimido en la wallet del profesionista como insignia verificable.
+
+5. **Oráculo descentralizado** — Reemplazar el script que consulta al Solr de la SEP por un oráculo como Switchboard o Pyth, para tener varias fuentes y no depender de un solo endpoint.
+
+6. **Dashboard público** — Indexar con Helius o The Graph para mostrar estadísticas por especialidad, por estado, por institución.
+
+---
+
+## Cómo correrlo hoy
+
+### Solana Playground (lo más rápido)
+
+1. Abrir: `https://beta.solpg.io/https://github.com/alejandroocanha/hippocrates-health-professionals-verification`
+2. Conectar wallet (crear una nueva o Phantom)
+3. En terminal:
    ```
    build
    deploy
    client
    ```
-4. Ver los logs de las 5 instrucciones ejecutándose y los `tx signatures` con link a Solana Explorer.
 
-### Opción 2 — Local (Anchor CLI ≥ 0.31)
+### Local (requiere Anchor CLI)
 
 ```bash
-git clone https://github.com/alejandroocanha/SOLANA-HIPPOCRATES.git
-cd SOLANA-HIPPOCRATES
+git clone https://github.com/alejandroocanha/hippocrates-health-professionals-verification.git
+cd hippocrates-health-professionals-verification
 anchor build
 anchor deploy --provider.cluster devnet
 ts-node client/client.ts
@@ -132,78 +103,14 @@ ts-node client/client.ts
 
 ---
 
-## Ejemplo de salida del cliente
-
-```
-Programa: 4Wq3...DPa
-RegistroGlobal PDA: 7sxJ...rRn
-SelloCedula PDA:    8dGL...mY9
-
-[OK] inicializar_registro tx: 5xZ4...wY3
-[OK] sellar_cedula tx:        2Bn7...tHr
-[OK] re_verificar_cedula tx:  9Pq2...sAm
-Estado del sello on-chain: {
-  id_cedula: '9876543',
-  estatus: { vigente: {} },
-  tipoProfesion: { nutricion: {} },
-  verificadaPor: 'GxRf...Qrt',
-  slot: '356491230',
-  contadorReverificaciones: 1
-}
-[OK] revocar_cedula tx: 4Lm8...kWp
-Estatus final: { revocada: {} }
-Stats globales: { totalSellos: '1', operadores: 1 }
-```
-
----
-
-## Helper opcional `sep_query.ts`
-
-Para **producir el hash real** desde el RENAPRO antes de mandar la transacción:
-
-```bash
-ts-node scripts/sep_query.ts 1234567
-```
-
-Imprime el `id_cedula`, el `hash_payload` (32 bytes), el `nombre_completo_hash` (32 bytes) y el `tipo_profesion` deducido, listos para pegarse como argumentos de `sellar_cedula()`.
-
-> **Nota:** No existe API REST oficial del gobierno mexicano para el RENAPRO. El script consulta el índice **Apache Solr público** que sirve internamente al portal `cedulaprofesional.sep.gob.mx`:
-> ```
-> GET http://search.sep.gob.mx/solr/cedulasCore/select?fl=*,score&q=idCedula:<NUMERO>&rows=1&wt=json
-> ```
-> Para producción se recomienda migrar a un proveedor con SLA (APIMarket, Nubarium, VerificaID).
-
----
-
-## Privacidad y consideraciones legales
-
-- **PII off-chain.** On-chain solo viven hashes (`SHA-256` de 32 bytes); el nombre y los datos personales nunca se persisten en claro.
-- **LFPDPPP.** Los datos del RENAPRO son públicos por mandato del Art. 21 de la Ley Reglamentaria del Art. 5° Constitucional, pero aún así esta implementación minimiza exposición.
-- **Derechos ARCO.** El admin puede ejecutar `revocar_cedula` ante una solicitud del titular.
-
----
-
-## Roadmap
-
-1. Frontend mínimo con `@solana/wallet-adapter` + un QR Solana Action que cualquier paciente pueda escanear.
-2. Multi-attestation: que un sello requiera la firma de N operadores (Squads-style).
-3. NFT comprimido (cNFT) por profesional verificado, llevado en su wallet como insignia.
-4. Indexación con Helius / The Graph para dashboards públicos por especialidad.
-5. Migración del proxy SEP a Switchboard / Pyth (oráculo descentralizado).
-
----
-
 ## Referencias
 
-- Solana Developer Certification (WayLearn): <https://waylearn.gitbook.io/solana-developer-certification>
-- Plantilla `WayLearnLatam/Biblioteca-Solana`: <https://github.com/WayLearnLatam/Biblioteca-Solana>
-- Anchor Lang Book: <https://www.anchor-lang.com/>
-- Solana Playground: <https://beta.solpg.io>
-- Portal oficial Cédula Profesional SEP: <https://www.cedulaprofesional.sep.gob.mx/>
-- Apache Solr — Common Query Parameters: <https://solr.apache.org/guide/solr/latest/query-guide/common-query-parameters.html>
+- [Bootcamp Solana Developer — WayLearn LATAM](https://waylearn.gitbook.io/solana-developer-certification)
+- [Plantilla Biblioteca-Solana](https://github.com/WayLearnLatam/Biblioteca-Solana)
+- [Anchor Lang Book](https://www.anchor-lang.com/)
+- [Solana Playground](https://beta.solpg.io)
+- [Portal Cédula Profesional SEP](https://www.cedulaprofesional.sep.gob.mx/)
 
 ---
 
-## Licencia
-
-MIT — ver `LICENSE` para detalles.
+*Proyecto desarrollado como entregable final del bootcamp Solana Developer Certification — WayLearn LATAM, Abril 2026.*
