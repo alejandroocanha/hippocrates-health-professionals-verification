@@ -86,4 +86,4 @@ Si esto siguiera adelante, las cosas que haría:
 
 ---
 
-*Proyecto desarrollado como entregable final del bootcamp Solana Developer Certification — WayLearn LATAM, Abril 2026.*
+*Proyecto desarrollado como entregable final del bootcamp Solana Developer Certification — WayLearn LATAM, Abril 2026. Hecho por [Alejandro Ocaña ](https://www.linkedin.com/in/aleocanha/)*
