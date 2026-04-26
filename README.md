@@ -21,16 +21,16 @@ Esto no reemplaza al RENAPRO — lo usa como fuente de verdad off-chain y ancla 
 ```
 SOLANA-HIPPOCRATES/
 ├── src/
-│   └── lib.rs          ← Programa Anchor (Rust). Acá viven las cuentas,
-│                        los contextos y las 5 instrucciones.
+│   └── lib.rs          ← Programa en Rust. Acá viven las cuentas,
+│                        los contextos y las 5 instrucciones
 ├── client/
 │   └── client.ts       ← Script de pruebas para Solana Playground.
-│                        Ejecuta todo el flujo CRUD de una vez.
+│                        Ejecuta todo el flujo CRUD de una vez
 ├── scripts/
 │   └── sep_query.ts    ← Helper que consulta el Solr público de la SEP
-│                        y produce los hashes para sellar_cedula().
+│                        y produce los hashes para sellar_cedula()
 ├── tests/
-│   └── anchor.test.ts  ← Tests (no obligatorios para la entrega).
+│   └── anchor.test.ts  ← Tests
 └── README.md
 ```
 
@@ -50,7 +50,7 @@ SOLANA-HIPPOCRATES/
 
 ## Estado actual
 
-Esto es un MVP funcional para el bootcamp. Puse a andar el programa completo en Devnet y verificaste que el flujo funciona:
+Esto es un MVP funcional para el bootcamp. Puse a andar el programa y funciona:
 
 ```
 inicializar_registro → sellar_cedula → re_verificar_cedula → consultar → revocar
@@ -72,34 +72,7 @@ Si esto siguiera adelante, las cosas que haría:
 
 4. **cNFT por profesionista** — Una vez sellada la cédula, mintear un token comprimido en la wallet del profesionista como insignia verificable.
 
-5. **Oráculo descentralizado** — Reemplazar el script que consulta al Solr de la SEP por un oráculo como Switchboard o Pyth, para tener varias fuentes y no depender de un solo endpoint.
-
-6. **Dashboard público** — Indexar con Helius o The Graph para mostrar estadísticas por especialidad, por estado, por institución.
-
----
-
-## Cómo correrlo hoy
-
-### Solana Playground (lo más rápido)
-
-1. Abrir: `https://beta.solpg.io/https://github.com/alejandroocanha/hippocrates-health-professionals-verification`
-2. Conectar wallet (crear una nueva o Phantom)
-3. En terminal:
-   ```
-   build
-   deploy
-   client
-   ```
-
-### Local (requiere Anchor CLI)
-
-```bash
-git clone https://github.com/alejandroocanha/hippocrates-health-professionals-verification.git
-cd hippocrates-health-professionals-verification
-anchor build
-anchor deploy --provider.cluster devnet
-ts-node client/client.ts
-```
+5. **Dashboard público** — Indexar con Helius o Para mostrar estadísticas por especialidad, por estado, por institución.
 
 ---
 
