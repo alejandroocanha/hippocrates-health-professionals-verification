@@ -8,7 +8,7 @@ Este proyecto sellla en Solana la verificación de cédulas de médicos, nutrió
 
 ## Por qué existe este proyecto
 
-En México, ejercer como profesionista de la salud sin cédula válida es un problema real. COFEPRIS y PROFECO han documentado casos de suplantación profesional, sobre todo en áreas como estética, nutrición y psicología.
+En México, ejercer como profesionista de la salud sin cédula válida es un problema real. COFEPRIS y PROFECO han documentado casos de suplantación profesional, sobre todo en áreas como estética, nutrición y psicología. Han sucedido casos como con Doctoralia, donde hay perfiles falsos de personas que se hacen pasar por profesionales de la salud. Los usuarios o los pacientes no se dan el tiempo de verificar que la persona que se muestra es realmente un profesional de la salud. Y no hay nada como algún tipo de insignia o registro que verifique que es verdad. 
 
 Hoy la consulta al RENAPRO es manual y no tiene API oficial. Hippocrates propone usar la blockchain de Solana como testigo inmutable: un operador autorizado verifica contra el registro oficial, calcula un hash, y lo sella on-chain junto con el timestamp y su firma digital.
 
@@ -56,7 +56,7 @@ Esto es un MVP funcional para el bootcamp. Puse a andar el programa y funciona:
 inicializar_registro → sellar_cedula → re_verificar_cedula → consultar → revocar
 ```
 
-Pero no tiene interfaz gráfica, no está en mainnet, y el script de SEP usa un endpoint público sin SLA.
+Pero no tiene interfaz gráfica, está el registro de las pruebas en DevNet, y el script de SEP usa un endpoint público sin SLA.
 
 ---
 
@@ -72,7 +72,7 @@ Si esto siguiera adelante, las cosas que haría:
 
 4. **cNFT por profesionista** — Una vez sellada la cédula, mintear un token comprimido en la wallet del profesionista como insignia verificable.
 
-5. **Dashboard público** — Indexar con Helius o Para mostrar estadísticas por especialidad, por estado, por institución.
+5. **Dashboard público** — Para mostrar estadísticas por especialidad, por estado, por institución.
 
 ---
 
